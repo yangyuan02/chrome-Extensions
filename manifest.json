@@ -1,0 +1,28 @@
+{
+    "background": {
+       "persistent": true,
+       "scripts": [ "background.static.js" ]
+    },
+    "content_scripts": [ {
+       "all_frames": true,
+       "js": [ "content.static.js" ],
+       "match_about_blank": true,
+       "matches": [ "http://*/*", "https://*/*", "ftp://*/*", "file://*/*" ],
+       "run_at": "document_start"
+    } ],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "description": "影刀Chrome自动化插件",
+    "icons": {
+       "128": "icons/shadow128.png",
+       "16": "icons/shadow16.png",
+       "32": "icons/shadow32.png",
+       "48": "icons/shadow64.png"
+    },
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmUT1sxTgUJMxTNVUfUbExYYSQ9zBaPr/T060kWmikxzXByFzbKzb4hQOwkmkv0lUmIsET/niZuRtO1CHd2tr9GwhtEXEzbVzuzPdxgay4lDcMpN62VC6tVmk6MBpfzolLky7EpbRfLboDepXet7xyc0yMm+Urf4eO+srETjXvA4B5isbsaX4Z/XS2EdDP6ZYMJNfoagiy/tYnZ4aHigL8/lTsSGgp9/gnit/e9nUfHVK768xyYHwmPE2H5ECoIvp7/Dtsgb6li1mbnxB28gjZ0wc6lg/wNIKpWW3RBikBAKxxrzht8hfTUHJZDaJdDzlc8yBiiLJ2AI2tD9dMz0TAQIDAQAB",
+    "manifest_version": 2,
+    "name": "影刀",
+    "permissions": [ "cookies", "management", "tabs", "debugger", "nativeMessaging", "downloads", "webNavigation", "clipboardRead", "clipboardWrite", "\u003Call_urls>" ],
+    "update_url": "https://clients2.google.com/service/update2/crx",
+    "version": "1.1"
+ }
+ 

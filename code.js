@@ -1,23 +1,23 @@
 (function () {
     if (!window.uiaMetadata) {
         window.uiaMetadata = {
-            uidKey: "uia-uid",
+            uidKey: 'uia-uid',
             latestUid: 0
         }
     }
 
     const TAGS = {
-        BODY: "BODY",
-        TABLE: "TABLE",
-        INPUT: "INPUT",
-        BUTTON: "BUTTON",
-        SELECT: "SELECT",
-        LABEL: "LABEL",
-        TEXTAREA: "TEXTAREA",
-        IFRAME: "IFRAME",
-        FRAME: "FRAME",
-        A: "A",
-        IMG: "IMG"
+        BODY: 'BODY',
+        TABLE: 'TABLE',
+        INPUT: 'INPUT',
+        BUTTON: 'BUTTON',
+        SELECT: 'SELECT',
+        LABEL: 'LABEL',
+        TEXTAREA: 'TEXTAREA',
+        IFRAME: 'IFRAME',
+        FRAME: 'FRAME',
+        A: 'A',
+        IMG: 'IMG'
     }
 
     const CLICK_TYPE = {
@@ -65,8 +65,8 @@
     }
 
     const SCROLL_BEHAVIOR = {
-        AUTO: "auto",
-        SMOOTH: "smooth"
+        AUTO: 'auto',
+        SMOOTH: 'smooth'
     }
 
     const NBSP_REGEXP = new RegExp(String.fromCharCode(160), "g")
@@ -121,14 +121,14 @@
                 uid = `${window.uiaDispatcher.frameBackendId}|${window.uiaMetadata.latestUid}` //fid|sequence
                 element.setAttribute(window.uiaMetadata.uidKey, uid)
             }
-            return uid + ":" + domUtils.getTagName(element) //fid|sequence:tagType
+            return uid + ':' + domUtils.getTagName(element) //fid|sequence:tagType
         }
         //根据eid获取dom element对象
         this.ElementFromUid = (uid) => {
-            const tokens = uid.split(":")
-            const element = document.querySelector(`${tokens[1]}[${window.uiaMetadata.uidKey}="${tokens[0]}"]`) //tagType[uia-uid="fid|sequence"]
+            const tokens = uid.split(':')
+            const element = document.querySelector(`${tokens[1]}[${window.uiaMetadata.uidKey}='${tokens[0]}']`) //tagType[uia-uid='fid|sequence']
             if (!element) {
-                throw new UIAError(UIAERROR_CODE.NoSuchElementID, "未找到指定ID的元素")
+                throw new UIAError(UIAERROR_CODE.NoSuchElementID, '未找到指定ID的元素')
             }
             return element
         }
@@ -149,7 +149,7 @@
         //获取节点名称
         this.getTagName = (element) => {
             // 某些情况下Form标签的tagName是input元素
-            if (typeof (element.tagName) === "string") {
+            if (typeof (element.tagName) === 'string') {
                 return element.tagName.toLowerCase()
             } else {
                 return element.nodeName.toLowerCase()
@@ -159,7 +159,7 @@
         //子frame在父frame中的索引位置 -> 子frame在父frame中的DOM对象 (必须要先拿到frame的dom对象才能进行下一步的dom操作)
         this.getFrameByIndex = (index) => { //子frame的索引位置
             //1、先在父frame中找到所有的frame dom对象
-            const nodes = document.querySelectorAll("frame, iframe")
+            const nodes = document.querySelectorAll('frame, iframe')
             //2、找到和指定frame匹配的dom frame对象
             for (const frame of nodes) {
                 if (frame.contentWindow === window.frames[index]) { //frame dom对象中的contentWindow才是frame对象
@@ -179,7 +179,7 @@
             const path = []
             do {
                 const tagName = domUtils.getTagName(element)
-                if (tagName === "body" || tagName === "html") {
+                if (tagName === 'body' || tagName === 'html') {
                     // 防止path为空导致后续QuerySelecor报错
                     if (path.length == 0) {
                         path.unshift(tagName)
@@ -190,7 +190,7 @@
                 element = element.parentNode
             } while (element)
 
-            return this.cssPathEscape(path.join(">"))
+            return this.cssPathEscape(path.join('>'))
         }
 
         this.extractAttributes = (element) => {
@@ -199,16 +199,16 @@
             for (const name of names) {
                 let value = element.getAttribute(name)
                 switch (name) {
-                    case "id":
-                        attrDict["id"] = value
+                    case 'id':
+                        attrDict['id'] = value
                         break
-                    case "title":
+                    case 'title':
                         if (value.length < 50) {
-                            attrDict["title"] = value
+                            attrDict['title'] = value
                         }
                         break
-                    case "class":
-                    case "style":
+                    case 'class':
+                    case 'style':
                     case window.uiaMetadata.uidKey:
                         break
                     default:
@@ -217,19 +217,19 @@
                 }
             }
             if (element.classList.length > 0) {
-                attrDict["class"] = [...element.classList].map(item => item.toLowerCase()).sort().join(" ")
+                attrDict['class'] = [...element.classList].map(item => item.toLowerCase()).sort().join(' ')
             }
 
-            if (element.childElementCount === 0 &&\t//只有当DOM元素中没有子元素时才会取它的innerText
+            if (element.childElementCount === 0 &&	//只有当DOM元素中没有子元素时才会取它的innerText
                 !domUtils.matchElementType(element, TAGS.INPUT, TAGS.SELECT, TAGS.TEXTAREA)) {
                 let text = element.innerText
                 if (text && text.length > 0 && text.length < 50) {
-                    attrDict["innerText"] = text
+                    attrDict['innerText'] = text
                 }
             }
 
             if (element.parentElement) {
-                attrDict["index"] = Array.prototype.indexOf.call(element.parentElement.children, element).toString()
+                attrDict['index'] = Array.prototype.indexOf.call(element.parentElement.children, element).toString()
             }
             return attrDict
         }
@@ -260,8 +260,8 @@
             //判断两个属性值是否等价
             function isAttributeMatch(value, sAttr) {
                 switch (sAttr.operator) {
-                    case "Equal":
-                        if (sAttr.name === "class") {
+                    case 'Equal':
+                        if (sAttr.name === 'class') {
                             if (value === sAttr.value) {
                                 return true
                             } else {
@@ -269,19 +269,19 @@
                                     return false
                                 }
                                 //"red h1" 等价于 "h1 red"，忽略顺序
-                                sValue = sAttr.value.match(/[^ ]+/g).map(item => item.toLowerCase()).sort().join(" ")
+                                sValue = sAttr.value.match(/[^ ]+/g).map(item => item.toLowerCase()).sort().join(' ')
                                 return value === sValue
                             }
                         } else {
                             return value === sAttr.value
                         };
-                    case "Regex": // 正则和通配符直接使用用户提供的表达式匹配
+                    case 'Regex': // 正则和通配符直接使用用户提供的表达式匹配
                         try {
                             return (new RegExp(sAttr.value)).test(value);
                         } catch (e) {
                             throw new ActionError(`不支持的正则表达式 : ${sAttr.value}`)
                         }
-                    case "WildCard":
+                    case 'WildCard':
                         return wildcardsMatchText(sAttr.value, value);
                     default:
                         return false
@@ -342,11 +342,11 @@
 
             function wildcardsMatchText(wcValue, text) {
                 function wildcardToRegex(pattern) {
-                    return "^" + pattern.replace("*", ".*").replace("?", ".") + "$"
+                    return '^' + pattern.replace('*', '.*').replace('?', '.') + '$'
                 }
 
                 const wcRegex = wildcardToRegex(wcValue)
-                return (new RegExp(wcRegex, "im")).test(text);
+                return (new RegExp(wcRegex, 'im')).test(text);
             }
 
             //0、预处理 （如果路径跨域就返回在前一个域中的路径）
@@ -357,21 +357,21 @@
                 while (sPath.length > 0) {
                     const sNode = sPath.shift()
                     sPathInFrame.push(sNode)
-                    if (sNode.name === "iframe" || sNode.name === "frame") {
+                    if (sNode.name === 'iframe' || sNode.name === 'frame') {
                         break
                     }
                 }
             } else {
                 for (const sNode of sPath) {
                     sPathInFrame.push(sNode)
-                    if (sNode.name === "iframe" || sNode.name === "frame") {
+                    if (sNode.name === 'iframe' || sNode.name === 'frame') {
                         break
                     }
                 }
             }
 
             //1、节点级的初步匹配
-            const cssSelector = this.cssPathEscape(sPathInFrame.map(m => m.name).join(">")) // div>div>div>iframe
+            const cssSelector = this.cssPathEscape(sPathInFrame.map(m => m.name).join('>')) // div>div>div>iframe
             const elements = root.querySelectorAll(cssSelector) //用户路径跨域的情况下，会获取到iframe这个元素，即elements[0]
 
             //2、属性级的详细过滤
@@ -393,8 +393,8 @@
 
         //根据XPath路径字符串 -> 寻找元素
         this.queryXPath = (xPath, parent = null) => {
-            //console.log("xPath" + xPath)
-            //console.log("parent" + parent)
+            //console.log('xPath' + xPath)
+            //console.log('parent' + parent)
             const root = parent || document
             var xPathResult = document.evaluate(xPath, root, null, XPathResult.ANY_TYPE, null)
             var elements = []
@@ -457,10 +457,10 @@
         }
 
         this.getFrameOffset = (element) => {
-            const pLeft = parseInt(window.getComputedStyle(element, null).getPropertyValue("padding-left")) || 0
-            const pTop = parseInt(window.getComputedStyle(element, null).getPropertyValue("padding-top")) || 0
-            const bLeft = parseInt(window.getComputedStyle(element, null).getPropertyValue("border-left-width")) || 0
-            const bTop = parseInt(window.getComputedStyle(element, null).getPropertyValue("border-top-width")) || 0
+            const pLeft = parseInt(window.getComputedStyle(element, null).getPropertyValue('padding-left')) || 0
+            const pTop = parseInt(window.getComputedStyle(element, null).getPropertyValue('padding-top')) || 0
+            const bLeft = parseInt(window.getComputedStyle(element, null).getPropertyValue('border-left-width')) || 0
+            const bTop = parseInt(window.getComputedStyle(element, null).getPropertyValue('border-top-width')) || 0
             return {
                 x: pLeft + bLeft,
                 y: pTop + bTop
@@ -482,7 +482,7 @@
             var length = cssStr.length;
             var index = -1;
             var codeUnit;
-            var result = "";
+            var result = '';
 
             var firstCodeUnit = cssStr.charCodeAt(0);
             while (++index < length) {
@@ -502,12 +502,12 @@
                             index--;
                         }
                     }
-                    result += "" + codeUnit.toString(16).toUpperCase() + " ";
+                    result += '\\' + codeUnit.toString(16).toUpperCase() + ' ';
                     continue;
                 } else {
                     // 类型 2.如果为 NULL (U+0000),使用(U+FFFD)替换
                     if (codeUnit == 0x0000) {
-                        result += "\uFFFD";
+                        result += '\uFFFD';
                         continue;
                     }
 
@@ -520,14 +520,14 @@
                         codeUnit == 0x007F || codeUnit == 0x003A ||
                         (index == 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
                         (index == 1 && codeUnit >= 0x0030 && codeUnit <= 0x0039 && firstCodeUnit == 0x002D)) {
-                        result += "" + codeUnit.toString(16) + " ";
+                        result += '\\' + codeUnit.toString(16) + ' ';
                         continue;
                     }
 
                     // 类型 4.使用`\`转义
                     // 只有一项,且为 `-` (U+002D), […]
                     if (index == 0 && length == 1 && codeUnit == 0x002D) {
-                        result += "" + cssStr.charAt(index);
+                        result += '\\' + cssStr.charAt(index);
                         continue;
                     }
 
@@ -545,7 +545,7 @@
                     }
 
                     // 否则 没有检测到的字符  直接转义
-                    result += "" + cssStr.charAt(index);
+                    result += '\\' + cssStr.charAt(index);
                 }
             }
             return result;
@@ -672,16 +672,16 @@
             this.required = new Set()
             // 为了防止出现运行时经常匹配到多个的问题，这里多加入一些属性，尽量严格一点
             if (domUtils.matchElementType(element, TAGS.INPUT, TAGS.BUTTON, TAGS.SELECT)) {
-                if (this.attributes["type"]) {
-                    this.required.add("type")
+                if (this.attributes['type']) {
+                    this.required.add('type')
                 }
-                if (this.attributes["name"]) {
-                    this.required.add("name")
+                if (this.attributes['name']) {
+                    this.required.add('name')
                 }
             }
             // 在diff的时候再判断是否required
-            // if (this.attributes["id"] && !(/\d+/.test(this.attributes["id"]))) {
-            //     this.required.add("id")
+            // if (this.attributes['id'] && !(/\d+/.test(this.attributes['id']))) {
+            //     this.required.add('id')
             // }
         }
 
@@ -695,7 +695,7 @@
                 return null
             }
             const tagName = domUtils.getTagName(parent)
-            if (tagName === "body" || tagName === "html") {
+            if (tagName === 'body' || tagName === 'html') {
                 return null
             } else {
                 return new WebNode(parent)
@@ -706,15 +706,15 @@
             if (this.element === other.element) {
                 return true
             }
-            const names = ["type", "id", "name", "title", "innerText", "class", "index"]
+            const names = ['type', 'id', 'name', 'title', 'innerText', 'class', 'index']
             for (const name of names) {
-                if (name === "id" && /\d+/.test(this.attr(name))) {
+                if (name === 'id' && /\d+/.test(this.attr(name))) {
                     continue
                 }
-                if (name === "class") {
+                if (name === 'class') {
                     if (this.classList.length > 0) {
                         let classes = this.classList.filter(m => other.classList.indexOf(m) == -1);
-                        if (classes.length > 0 && this.classList.some(m => !other.classList.includes(m)) && !/hover|[^a-zA-Z](?:on|open|active)/.test(classes.join(" "))) {
+                        if (classes.length > 0 && this.classList.some(m => !other.classList.includes(m)) && !/hover|[^a-zA-Z](?:on|open|active)/.test(classes.join(' '))) {
                             this.required.add(name)
                             return true
                         }
@@ -731,16 +731,16 @@
 
         toSelectorNode() {
             const node = {
-                "name": domUtils.getTagName(this.element),
-                "type": "Web",
-                "attributes": []
+                'name': domUtils.getTagName(this.element),
+                'type': 'Web',
+                'attributes': []
             }
             for (const [name, value] of Object.entries(this.attributes)) {
                 node.attributes.push({
-                    "name": name,
-                    "value": value,
-                    "operator": "Equal",
-                    "required": this.required.has(name)
+                    'name': name,
+                    'value': value,
+                    'operator': 'Equal',
+                    'required': this.required.has(name)
                 })
             }
             return node
@@ -800,8 +800,8 @@
                         const finalBounding = cssBounding.scale(args.zoom)
                         return {
                             bounding: finalBounding,
-                            info: ["INPUT", "BUTTON"].includes(tagName) ?
-                                tagName + "," + element.getAttribute("type") : tagName
+                            info: ['INPUT', 'BUTTON'].includes(tagName) ?
+                                tagName + ',' + element.getAttribute('type') : tagName
                         }
                     }
                 } else {
@@ -837,13 +837,13 @@
                     const domFrame = domUtils.getFrameByIndex(args.childFrameIndex) //在父frame中的索引位置 -> 在父frame中的DOM对象
                     var frameSPath = domUtils.buildCSSPath(domFrame)
                     if (!frameSPath)
-                        throw new ActionError("计算元素的全局路径时出错")
+                        throw new ActionError('计算元素的全局路径时出错')
                     sPath = frameSPath.split(">").concat(sPath)
                 } else { // first request
                     const element = domUtils.ElementFromUid(args.elementId)
                     var elementSPath = domUtils.buildCSSPath(element)
                     if (!elementSPath)
-                        throw new ActionError("计算元素的全局路径时出错")
+                        throw new ActionError('计算元素的全局路径时出错')
                     sPath = elementSPath.split(">").concat(sPath)
                 }
 
@@ -939,9 +939,9 @@
                 const sPath = args.path
                 const elements = domUtils.querySPath(sPath)
                 if (elements.length === 0) {
-                    throw new ActionError("找不到匹配的元素")
+                    throw new ActionError('找不到匹配的元素')
                 } else if (elements.length > 1) {
-                    throw new ActionError("匹配到多个元素, 无法识别唯一属性")
+                    throw new ActionError('匹配到多个元素, 无法识别唯一属性')
                 } else {
                     if (domUtils.matchElementType(elements[0], TAGS.IFRAME, TAGS.FRAME) &&
                         sPath.length > 0) {
@@ -956,20 +956,20 @@
             queryTableSelector: (args) => {
                 function getAttrValue(element, attrName, pattern) {
                     let result = null
-                    if (attrName === "Text") {
+                    if (attrName === 'Text') {
                         result = domUtils.replaceNbspToSpace(element.innerText || element.value || "")
-                    } else if (attrName.includes("Href")) {
+                    } else if (attrName.includes('Href')) {
                         const eleA = domUtils.findAncestor(element, (e) => {
                             return domUtils.matchElementType(e, TAGS.A)
                         }, true)
                         if (eleA) {
-                            result = attrName.includes("AbsoluteUrl") ? eleA.href : eleA.getAttribute("href")
+                            result = attrName.includes('AbsoluteUrl') ? eleA.href : eleA.getAttribute('href')
                         } else {
                             result = null
                         }
-                    } else if (attrName.includes("Image")) {
+                    } else if (attrName.includes('Image')) {
                         if (domUtils.matchElementType(element, TAGS.IMG)) {
-                            result = attrName.includes("AbsoluteUrl") ? element.src : element.getAttribute("src")
+                            result = attrName.includes('AbsoluteUrl') ? element.src : element.getAttribute('src')
                         } else {
                             result = null
                         }
@@ -1078,7 +1078,7 @@
                 // 需要重构成 SendKeysToHtmlElement
                 const element = domUtils.ElementFromUid(args.elementId)
                 const nodeName = element.nodeName.toLowerCase()
-                if (nodeName == "textarea" || nodeName == "input") {
+                if (nodeName == 'textarea' || nodeName == 'input') {
                     if (args.append) {
                         element.value = element.value + args.value
                     } else {
@@ -1131,7 +1131,7 @@
                     // 需要考虑到element的父元素可能hidden属性，这里只能返回可视区域（取交集）
                     let elementBounding = element.getBoundingClientRect()
                     const targetParent = domUtils.findAncestor(element, (e) => {
-                        return getComputedStyle(e).overflow === "hidden"
+                        return getComputedStyle(e).overflow === 'hidden'
                     }, false)
                     if (targetParent) {
                         let parentBounding = Rect.fromDOMRect(targetParent.getBoundingClientRect())
@@ -1324,7 +1324,7 @@
                 // items, mode, append, multiple
                 const element = domUtils.ElementFromUid(args.elementId)
                 if (!domUtils.matchElementType(element, TAGS.SELECT)) {
-                    throw new ActionError("此元素不支持勾选操作")
+                    throw new ActionError('此元素不支持勾选操作')
                 }
 
                 function isMatch(text) {
@@ -1356,15 +1356,15 @@
                     }
                 }
 
-                const event = document.createEvent("Events");
-                event.initEvent("change", true, false);
+                const event = document.createEvent('Events');
+                event.initEvent('change', true, false);
                 element.dispatchEvent(event);
             },
             selectByIndex: (args) => {
                 // indexes, append, multiple 
                 const element = domUtils.ElementFromUid(args.elementId)
                 if (!domUtils.matchElementType(element, TAGS.SELECT)) {
-                    throw new ActionError("此元素不支持勾选操作")
+                    throw new ActionError('此元素不支持勾选操作')
                 }
 
                 if (args.multiple && !args.append) {
@@ -1382,14 +1382,14 @@
                     }
                 }
 
-                const event = document.createEvent("Events");
-                event.initEvent("change", true, false);
+                const event = document.createEvent('Events');
+                event.initEvent('change', true, false);
                 element.dispatchEvent(event);
             },
             getSelectOptions: (args) => {
                 let element = domUtils.ElementFromUid(args.elementId)
                 if (!domUtils.matchElementType(element, TAGS.SELECT)) {
-                    throw new ActionError("此元素不支持勾选操作")
+                    throw new ActionError('此元素不支持勾选操作')
                 }
                 return [...element.options].map((m) => {
                     return {
@@ -1412,15 +1412,15 @@
                     }
                 }
                 if (!domUtils.matchElementType(element, TAGS.INPUT)) {
-                    throw new ActionError("此元素不支持勾选操作")
+                    throw new ActionError('此元素不支持勾选操作')
                 }
-                if (element.type === "radio") {
+                if (element.type === 'radio') {
                     if (args.mode !== CHECK_MODE.CHECK) {
-                        throw new ActionError("radio元素不支持取消勾选操作")
+                        throw new ActionError('radio元素不支持取消勾选操作')
                     } else {
                         element.checked || domUtils.raiseClickOnElement(element)
                     }
-                } else if (element.type === "checkbox") {
+                } else if (element.type === 'checkbox') {
                     if (args.mode === CHECK_MODE.CHECK) {
                         !element.checked && domUtils.raiseClickOnElement(element)
                     } else if (args.mode === CHECK_MODE.UNCHECK) {
@@ -1429,7 +1429,7 @@
                         domUtils.raiseClickOnElement(element) // CHECK_MODE.TOGGLE
                     }
                 } else {
-                    throw new ActionError("此元素不支持勾选操作")
+                    throw new ActionError('此元素不支持勾选操作')
                 }
             },
             isChecked: (args) => {
@@ -1448,7 +1448,7 @@
                 if (typeof status === "boolean") {
                     return status
                 } else {
-                    throw new ActionError("无法读取此元素的勾选状态")
+                    throw new ActionError('无法读取此元素的勾选状态')
                 }
             },
             isEnabled: (args) => {
@@ -1464,12 +1464,12 @@
                 let element = domUtils.ElementFromUid(args.elementId)
                 //元素隐藏暂时不考虑opacity的情况
                 let visibility = getComputedStyle(element).visibility; //计算样式visibility只有visible和hidden两种情况
-                if (visibility == "visible") //需要进一步观察，看它是不是在一个不可见的容器中
+                if (visibility == 'visible') //需要进一步观察，看它是不是在一个不可见的容器中
                 {
                     while (element && element.nodeType == 1) {
                         let display = getComputedStyle(element).display;
-                        //console.log("display" + display)\t
-                        if (display == "" || display == "none")
+                        //console.log('display' + display)	
+                        if (display == '' || display == 'none')
                             return false;
                         element = element.parentNode;
                     }
@@ -1501,23 +1501,23 @@
                     element = domUtils.getScrollableParent(element, "vertical");
                 }
 
-                if (args.location == "Point") {
+                if (args.location == 'Point') {
                     element.scrollTo({
                         top: args.top,
                         left: args.left,
                         behavior: args.behavior
                     })
-                } else if (args.location == "Top") {
+                } else if (args.location == 'Top') {
                     element.scrollTo({
                         top: 0,
                         behavior: args.behavior
                     })
-                } else if (args.location == "Bottom") {
+                } else if (args.location == 'Bottom') {
                     element.scrollTo({
                         top: element == window ? document.body.scrollHeight : element.scrollHeight,
                         behavior: args.behavior
                     })
-                } else if (args.location == "Screen") {
+                } else if (args.location == 'Screen') {
                     element.scrollTo({
                         top: document.documentElement.scrollTop + document.documentElement.clientHeight,
                         behavior: args.behavior
@@ -1630,10 +1630,10 @@
                 fetch(args.url, requestOptions)
                     .then(res => {
                         fetch_result = {
-                            "status_code": res.status,
-                            "content_type": "",
-                            "content_encoding": "",
-                            "content": "",
+                            'status_code': res.status,
+                            'content_type': '',
+                            'content_encoding': '',
+                            'content': '',
                         }
 
 
@@ -1645,10 +1645,10 @@
 
                         if (res.ok) {
                             res.headers.forEach(function (val, key) {
-                                if (key == "content-type")
-                                    fetch_result["content_type"] = val
-                                else if (key == "content-encoding")
-                                    fetch_result["content_encoding"] = val
+                                if (key == 'content-type')
+                                    fetch_result['content_type'] = val
+                                else if (key == 'content-encoding')
+                                    fetch_result['content_encoding'] = val
                             });
 
                             //body
@@ -1665,24 +1665,24 @@
                     })
                     .catch(error => {
                         fetch_finish = true
-                        fetch_result = { "error": error.message }
+                        fetch_result = { 'error': error.message }
                     })
                     .then(data => {
                         if (data && args.filename) {
                             const reader = new FileReader;
                             reader.onerror = (error) => {
                                 fetch_finish = true
-                                fetch_result["error"] = error
+                                fetch_result['error'] = error
                             }
                             reader.onload = () => {
                                 fetch_finish = true
                                 if (reader.result)
-                                    fetch_result["content"] = btoa(reader.result)
+                                    fetch_result['content'] = btoa(reader.result)
                             };
                             reader.readAsBinaryString(data)
                         } else if (data) {
                             fetch_finish = true
-                            fetch_result["content"] = data
+                            fetch_result['content'] = data
                         }
                     })
             },
@@ -1697,13 +1697,13 @@
                     element = domUtils.getScrollableParent(element, args.direction)
                 }
 
-                if (args.direction == "vertical") {
-                    if (args.location == "Current")
+                if (args.direction == 'vertical') {
+                    if (args.location == 'Current')
                         return element.scrollTop
                     else
                         return element.scrollHeight
                 } else {
-                    if (args.location == "Current")
+                    if (args.location == 'Current')
                         return element.scrollLeft
                     else
                         return element.scrollWidth
@@ -1711,12 +1711,12 @@
             }
         }
 
-        this.version = "e54893c433271cb29b0dbed9b76d9b81"
+        this.version = 'e54893c433271cb29b0dbed9b76d9b81'
         this.frameBackendId = null
         this.invoke = function (actionName, args) {
             function failure(code, message) {
                 return {
-                    status: "failure",
+                    status: 'failure',
                     error: {
                         code: code,
                         message: message
@@ -1726,7 +1726,7 @@
 
             function uiaFailure(code, message) {
                 return {
-                    status: "uiafailure",
+                    status: 'uiafailure',
                     error: {
                         code: code,
                         message: message
@@ -1741,17 +1741,17 @@
                 const result = action.call(window, args)
                 if (result instanceof Tunneling) {
                     return {
-                        status: "tunneling",
+                        status: 'tunneling',
                         route: result
                     }
                 } else if (result instanceof Bubbling) {
                     return {
-                        status: "bubbling",
+                        status: 'bubbling',
                         route: result
                     }
                 } else {
                     return {
-                        status: "success",
+                        status: 'success',
                         result: result === undefined ? null : result
                     }
                 }
